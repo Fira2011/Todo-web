@@ -1,4 +1,3 @@
-import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Pencil, Trash2, GripVertical } from "lucide-react";
@@ -11,6 +10,8 @@ import {
   IconButton,
   Badge,
   useColorModeValue,
+  Button,
+  useToast,
 } from "@chakra-ui/react";
 import { Todo } from "../store/todoStore";
 
@@ -22,6 +23,7 @@ interface TodoItemProps {
 }
 
 export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
+  const toast = useToast();
   const {
     attributes,
     listeners,
@@ -46,6 +48,18 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
     high: "red",
   };
 
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      onDelete();
+      toast({
+        title: "Task deleted",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <Box
       ref={setNodeRef}
@@ -60,68 +74,66 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
       _hover={{ bg: hoverBg }}
       position="relative"
     >
-      <HStack spacing={4}>
-        <Box
-          cursor="grab"
-          {...attributes}
-          {...listeners}
-          color="gray.500"
-          _hover={{ color: "gray.700" }}
-        >
-          <GripVertical size={20} />
-        </Box>
-
-        <Checkbox
-          isChecked={todo.completed}
-          onChange={onToggle}
-          colorScheme="green"
-        />
-
-        <Box flex="1">
-          <Text
-            fontSize="sm"
-            fontWeight="medium"
-            textDecoration={todo.completed ? "line-through" : "none"}
-            color={todo.completed ? "gray.500" : "inherit"}
+      <HStack spacing={4} align="center" justify="space-between">
+        <HStack spacing={4} flex={1}>
+          <Box
+            cursor="grab"
+            {...attributes}
+            {...listeners}
+            color="gray.500"
+            _hover={{ color: "gray.700" }}
           >
-            {todo.title}
-          </Text>
-          <HStack spacing={2} mt={1}>
-            <Badge colorScheme={priorityColors[todo.priority]}>
-              {todo.priority}
-            </Badge>
-            {todo.dueDate && (
-              <Text fontSize="xs" color="gray.500">
-                Due: {format(new Date(todo.dueDate), "MMM d, yyyy")}
-              </Text>
-            )}
-          </HStack>
-        </Box>
+            <GripVertical size={20} />
+          </Box>
 
-        <HStack
-          spacing={1}
-          opacity={0}
-          _groupHover={{ opacity: 1 }}
-          transition="0.2s"
-        >
+          <Checkbox
+            isChecked={todo.completed}
+            onChange={onToggle}
+            colorScheme="green"
+          />
+
+          <Box flex="1">
+            <Text
+              fontSize="sm"
+              fontWeight="medium"
+              textDecoration={todo.completed ? "line-through" : "none"}
+              color={todo.completed ? "gray.500" : "inherit"}
+            >
+              {todo.title}
+            </Text>
+            <HStack spacing={2} mt={1}>
+              <Badge colorScheme={priorityColors[todo.priority]}>
+                {todo.priority}
+              </Badge>
+              {todo.dueDate && (
+                <Text fontSize="xs" color="gray.500">
+                  Due: {format(new Date(todo.dueDate), "MMM d, yyyy")}
+                </Text>
+              )}
+            </HStack>
+          </Box>
+        </HStack>
+
+        <HStack spacing={2}>
           <IconButton
             icon={<Pencil size={16} />}
-            aria-label="Edit todo"
+            aria-label="Edit task"
             size="sm"
             variant="ghost"
             onClick={() => {
-              const newTitle = prompt("Edit todo:", todo.title);
-              if (newTitle) onEdit({ title: newTitle });
+              const newTitle = prompt("Edit task:", todo.title);
+              if (newTitle?.trim()) onEdit({ title: newTitle.trim() });
             }}
           />
-          <IconButton
-            icon={<Trash2 size={16} />}
-            aria-label="Delete todo"
+          <Button
+            leftIcon={<Trash2 size={16} />}
+            colorScheme="red"
             size="sm"
             variant="ghost"
-            colorScheme="red"
-            onClick={onDelete}
-          />
+            onClick={handleDelete}
+          >
+            Delete
+          </Button>
         </HStack>
       </HStack>
     </Box>
