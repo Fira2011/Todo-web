@@ -1,11 +1,11 @@
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Box, Container, Flex, IconButton, useColorMode } from '@chakra-ui/react';
 import { Moon, Sun } from 'lucide-react';
-import TodoList from './pages/TodoList';
+import { Route, Routes } from 'react-router-dom';
+import Navigation from './components/Navigation';
 import Settings from './pages/Settings';
 import Stats from './pages/Stats';
-import Navigation from './components/Navigation';
+import TodoList from './pages/TodoList';
 
 export default function App() {
   const { colorMode, toggleColorMode } = useColorMode();
