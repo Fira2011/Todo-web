@@ -1,3 +1,4 @@
+
 import {
   Box,
   Button,
@@ -7,14 +8,30 @@ import {
   Text,
   useColorMode,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
 import { useTodoStore } from "../store/todoStore";
 
 export default function Settings() {
   const { colorMode, toggleColorMode } = useColorMode();
-  const clearTodos = useTodoStore((state) => ({
-    clearTodos: () => state.reorderTodos([]),
-  })).clearTodos;
+  const toast = useToast();
+  const clearTodos = useTodoStore((state) => state.clearTodos);
+
+  const handleClearTodos = () => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete all todos? This cannot be undone."
+      )
+    ) {
+      clearTodos();
+      toast({
+        title: "All todos deleted",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <Box>
@@ -43,17 +60,9 @@ export default function Settings() {
               colorScheme="red"
               variant="outline"
               size="sm"
-              onClick={() => {
-                if (
-                  window.confirm(
-                    "Are you sure you want to clear all todos? This action cannot be undone."
-                  )
-                ) {
-                  clearTodos();
-                }
-              }}
+              onClick={handleClearTodos}
             >
-              Clear All Todos
+              Delete All Todos
             </Button>
           </Box>
         </VStack>

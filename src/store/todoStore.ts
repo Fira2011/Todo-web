@@ -23,6 +23,7 @@ interface TodoStore {
   setFilter: (filter: 'all' | 'active' | 'completed') => void;
   setSortBy: (sort: 'priority' | 'dueDate' | 'createdAt') => void;
   reorderTodos: (todos: Todo[]) => void;
+  clearTodos: () => void;
 }
 
 export const useTodoStore = create<TodoStore>()(
@@ -64,6 +65,7 @@ export const useTodoStore = create<TodoStore>()(
       setFilter: (filter) => set({ filter }),
       setSortBy: (sortBy) => set({ sortBy }),
       reorderTodos: (todos) => set({ todos }),
+      clearTodos: () => set({ todos: [] }),
     }),
     {
       name: 'todo-storage',
